@@ -1,0 +1,7 @@
+# Exclude unnecessary files
+data/
+.env
+.venv/
+*.log
+*.pdf
+*.html
