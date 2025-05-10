@@ -1,18 +1,20 @@
 # FinTech ML Labs
 ## Overview
+```
 fintech-ml-labs/
 │
 ├── README.md                        # Project overview & video links
-├── episode_01_intro/
+├── dashboard/
 │   └── slides.pdf                   # Intro slides (optional)
 │
-├── episode_02_credit_scoring/
+├── notebooks/
 │   ├── credit_scoring_model.ipynb  # Jupyter notebook with code
 │   ├── data/
 │   │   └── loan_data.csv           # Public dataset (e.g., from Kaggle)
 │   └── requirements.txt            # scikit-learn, pandas, etc.
 │
 └── LICENSE
+```
 
 ## Installation
 1. Clone the repository
