@@ -37,7 +37,7 @@ requirements.txt     # Required Python packages
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/fintech-ml-labs.git
+git clone https://github.com/epythonlab2/fintech-ml-labs.git
 cd fintech-ml-labs
 ```
 
@@ -78,7 +78,7 @@ Instructions for setting up the API or dashboard will be provided in later episo
 ## 🎬 Video Series
 
 📺 Watch the full tutorial series on YouTube:  
-[**Build FinTech ML Projects with Python (Intro Episode)**](#)
+[**Build FinTech ML Projects with Python (Intro Episode)**](https://youtu.be/Qs5Jtaxl7Lc)
 
 Each video includes:
 - Python walkthrough
@@ -95,4 +95,4 @@ See the `LICENSE` file for details.
 
 ---
 
-**Created by Atseva – AI developer and educator focused on ML in finance.**
+**Created by Asibeh – AI developer and educator focused on ML in finance.**
