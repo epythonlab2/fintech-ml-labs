@@ -79,6 +79,7 @@ Instructions for setting up the API or dashboard will be provided in later episo
 
 📺 Watch the full tutorial series on YouTube:  
 [**Build FinTech ML Projects with Python (Intro Episode)**](https://youtu.be/Qs5Jtaxl7Lc)
+
 [**Build FinTech ML Projects with Python (Credit Scoring Model)**](https://youtu.be/pWOoYpJsaDc)
 
 Each video includes:
