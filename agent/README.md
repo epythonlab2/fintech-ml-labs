@@ -8,6 +8,8 @@ In reality, you can build using pure Python.
 
 In this video, I will show you how to build a fully functional AI agent from scratch using pure Python. We're not going to rely on **LangChain, CrewAI**, or any other heavy frameworks. Instead, we'll build it step by step so you can understand exactly what's happening at each stage. By the end, you'll have a working AI agent and a solid understanding of how modern AI agents make decisions and use tools.
 
+Before we begin, please like this video, subscribe to the channel, and leave a comment below. Your support really helps a lot. Let's get started!
+
 ### 2. What is an AI Agent?
 ```bash
               ┌────────────────────────┐
@@ -92,7 +94,21 @@ python3 -m venv .venv
 ```
 Here, `python3 -m venv` tells Python to create a virtual environment, and `.venv` is simply the name of that environment. You're free to choose any name you like, but .venv is a common convention and helps keep your projects organized.
 
-Now that w've created our virtual environment, the next step is to install the packages we'll need for this project. Open your terminal and run the following command:
+Now, activate the virtual environment.
+
+On Linux or macOS, run:
+```python
+source .venv/bin/activate
+```
+
+On Windows, run:
+```python
+.venv\Scripts\activate
+```
+
+Once the virtual environment is activated, we're ready to install the packages for this project.
+
+In the terminal, run:
 ```python
 pip install openai python-dotenv
 ```
@@ -342,3 +358,73 @@ Agent: Machine learning is a broader field where systems learn from data, while 
 User: How does tool calling work in AI agents?
 Agent: Tool calling allows an AI model to interact with external functions and systems to complete tasks beyond generating text.
 ```
+Notice the difference. Our previous version relied on predefined rules, but now the agent can understand a wide range of natural language requests.
+
+This is the foundation of modern AI agents: combining an LLM's reasoning ability with external tools that allow the system to take action.
+
+### 9. Understanding the Agent Loop
+
+Step back and examine the full picture. This exact lifecycle is what frameworks like AutoGen, LangChain, or CrewAI execute behind their abstraction layers.
+
+They automate prompt engineering, schema definitions, and state serialization. But when you build this loop yourself from scratch, you eliminate mystery. You gain complete visibility over token management, routing logic, and execution safety.
+
+```bash
+┌─────────────────────────────────────────────────────────┐
+│                    THE AGENT LIFECYCLE                  │
+├─────────────────────────────────────────────────────────┤
+│  1. Capture Input State                                 │
+│  2. Evaluate Intent via Reasoning Engine (LLM)          │
+│  3. Branch Decision: Tool Call required?                │
+│     ├── YES ──► Invoke Function ──► Append to Context   │
+│     └── NO  ──► Generate Final Output                   │
+│  4. Yield Execution Control Back to System              │
+└─────────────────────────────────────────────────────────┘
+```
+### 10. How LangChain Fits In
+
+At this point, you might be wondering: Where do frameworks like LangChain and CrewAI fit in?
+
+The answer is simple. Frameworks don't replace the fundamentals—they build on top of them.
+
+Everything we've built from scratch has an equivalent abstraction in a framework. The main difference is that the framework automates much of the boilerplate code.
+
+Here's a quick comparison:
+```bash
+| Core Concept     | Raw Python Implementation                 | Framework Abstraction                    |
+| ---------------- | ----------------------------------------- | ---------------------------------------- |
+| Control Loop     | `while` loop                              | Agent Executor                           |
+| Tool Interface   | Python functions (`def`)                  | Tool schemas or decorators               |
+| Model Runtime    | Direct OpenAI API calls                   | Provider-agnostic model wrappers         |
+| State Management | Python variables, lists, and dictionaries | Conversation memory and state management |
+```
+Frameworks become valuable as your applications grow. They offer built-in integrations for vector databases, memory, multiple model providers, tool management, and workflow orchestration.
+
+But there's an important lesson here. If you rely on a framework before understanding how an AI agent actually works, debugging becomes much harder because many of the details are hidden behind abstractions.
+
+That's why I recommend learning the fundamentals first. Once you understand the core architecture, frameworks become productivity tools instead of black boxes. You'll know exactly what they're doing behind the scenes and when they're worth using.
+
+### 11. Next Improvements
+
+Now that you hold the core blueprint, here is your roadmap for scaling this architecture:
+
+- First: Refactor tool execution to use native JSON schemas for automated argument generation.
+
+- Second: Add persistent conversation memory to preserve multi-turn state.
+
+- Third: Implement task-decomposition patterns to enable multi-step autonomous planning.
+
+```bash
+   [Phase 1] Pure Python Agent Core (Done)
+      │
+      ▼
+   [Phase 2] Native Tool Calling & JSON Schemas
+      │
+      ▼
+   [Phase 3] Conversational Memory & Vector Store State
+      │
+      ▼
+   [Phase 4] Multi-Step Planning & Self-Correction Loops
+```
+### 12. Conclusion
+
+AI agents aren't magic. They're built on a simple loop: observe, reason, decide, and act.
