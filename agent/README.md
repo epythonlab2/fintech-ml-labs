@@ -197,4 +197,148 @@ If the user's prompt contains the word `"time"`, the agent recognizes that it ne
 
 This is the basic idea behind tool selection in an AI agent: the agent receives a request, decides what capability it needs, and then executes the appropriate tool.
 
+```python
+if "time" in normalized_prompt:
+    return get_current_time()
+```
 
+
+Next, we handle calculation requests.
+
+If the user's prompt contains the word "calculate", the agent extracts the mathematical expression from the input and sends it to our calculator tool.
+
+The calculator then processes the expression and returns the result back to the agent.
+
+```python
+elif "calculate" in normalized_prompt:
+    expression = normalized_prompt.replace("calculate", "").strip()
+    return calculator(expression)
+```
+If no tool signatures are detected, the router falls back to standard execution.
+
+```python
+else:
+    return "No external tools required. Reverting to direct response."
+```
+Pause and inspect this. Without importing a single external framework, we have designed a functioning agent core. It ingests state, evaluates criteria, routes execution, and yields output.
+
+
+### 7. Run the Agent
+
+Now let's move to `main.py`.
+
+Here, we import our SimpleAgent class and create an instance of the agent. This gives us an object we can use to send requests and interact with our AI agent.
+
+```python
+from agent import SimpleAgent
+
+agent = SimpleAgent()
+```
+
+Next, we create a simple execution loop that allows us to interact with our agent from the terminal.
+
+The loop keeps asking for user input and continues running until the user types "exit". This gives us a simple way to test our agent in real time.
+
+```python
+while True:
+    user_input = input("User: ")
+
+    if user_input.strip().lower() == "exit":
+        break
+```
+
+Finally, inside the loop, we send the user's input to the agent using the `think()` method.
+
+The agent processes the request, decides what action to take, and returns a response. We then display that response in the terminal.
+
+```python
+response = agent.think(user_input)
+print(f"Agent: {response}\n")
+```
+
+Now let's run our agent.
+
+Open the terminal and execute the main.py file:
+```python
+python3 main.py
+```
+Once the application starts, we can interact with our agent directly from the terminal. Let's test it by sending different requests and see how the agent decides which tool to use.
+
+First, we ask a time-related question. The agent recognizes the keyword "time", selects the correct tool, and returns the current time.
+
+Next, we provide a calculation request. The agent extracts the expression, sends it to the calculator tool, and returns the result.
+
+Finally, we send a request that doesn't require any tool. Since the agent doesn't have a matching tool for this type of request yet, it falls back to a direct response.
+
+This simple example demonstrates the core agent workflow: receive input, make a decision, choose an action, and return a result.
+
+```python
+$ python main.py
+
+User: what time is it right now
+Agent: 2026-07-22 13:45:10
+
+User: calculate 45 * 12
+Agent: 540
+
+User: tell me a joke
+Agent: No external tools required. Reverting to direct response.
+```
+
+Notice how our simple decision logic cleanly routes each request to the right place.
+
+When the agent recognizes a specific task, it calls the appropriate tool. When no tool is needed, it simply returns a direct response.
+
+This is the basic foundation of an AI agent: understanding the request, deciding what action to take, and executing that action.
+
+### 8. Add an LLM Brain
+
+Now that we understand the basic agent loop, let's take the next step and add an LLM as the brain of our agent.
+
+Our current approach uses simple `if/else` conditions to decide which tool to call. This works for predictable commands, but real-world users don't always phrase requests in the same way.
+
+For example, a user might ask `"Can you tell me the current time?"` or `"What time is it where I am?"` Both mean the same thing, but a rule-based system may not recognize them.
+
+This is where a Large Language Model helps. Instead of relying only on hardcoded rules, the LLM can understand the user's intent, reason about the request, and decide what action the agent should take.
+
+Now let's integrate an LLM into our agent.
+
+First, we import the OpenAI client and create an instance that allows our application to communicate with the model.
+
+Then, we define the think_with_llm() function. This function takes the user's prompt, sends it to the LLM, and returns the model's response.
+
+Instead of manually writing many if/else conditions, the model can now understand different ways users express their requests and generate a response based on the context.
+
+This is the key transition from a rule-based system to a more flexible AI agent architecture. The LLM becomes the reasoning layer that helps the agent interpret requests and decide what to do next.
+```python
+from openai import OpenAI
+
+client = OpenAI()
+
+def think_with_llm(prompt: str) -> str:
+    response = client.responses.create(
+        model="gpt-5",
+        input=prompt
+    )
+    return response.output_text
+```
+
+With this approach, our agent is no longer limited to exact keywords. It can handle more natural conversations and understand the intent behind user requests.
+
+Now let's test our LLM-powered agent.
+
+Run the application again and try different types of questions. This time, instead of matching specific keywords, the model will interpret the meaning of the request and generate a response based on the context.
+
+For example:
+```python
+$ python main.py
+
+User: Explain what an AI agent is
+Agent: An AI agent is a system that can perceive information, make decisions, and take actions to achieve a goal...
+
+User: What is the difference between machine learning and deep learning?
+Agent: Machine learning is a broader field where systems learn from data, while deep learning uses neural networks with multiple layers...
+
+User: How does tool calling work in AI agents?
+Agent: Tool calling allows an AI model to interact with external functions and systems to complete tasks beyond generating text.
+```
