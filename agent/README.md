@@ -91,3 +91,48 @@ Next, let's create a virtual environment. Run the following command:
 python3 -m venv .venv
 ```
 Here, `python3 -m venv` tells Python to create a virtual environment, and `.venv` is simply the name of that environment. You're free to choose any name you like, but .venv is a common convention and helps keep your projects organized.
+
+Now that w've created our virtual environment, the next step is to install the packages we'll need for this project. Open your terminal and run the following command:
+```python
+pip install openai python-dotenv
+```
+
+This installs two libraries. The **OpenAI** package allows our Python application to communicate with OpenAI models, and **python-dotenv** lets us securely load environment variables, such as our API key, from a **.env** file instead of hardcoding them into our code. This is a simple but important best practice for keeping sensitive information secure.
+
+Now, let's create the files we'll need for our project.
+
+Inside the **agent** folder, create a new file named `.env`. This file is where we'll store our OpenAI API key securely.
+
+Open the `.env` file and add the following line:
+```python
+OPENAI_API_KEY=your_actual_api_key_here
+```
+
+Next, sign in to your OpenAI account, create or copy your API key from the API dashboard, and replace your_actual_api_key_here with your own key.
+
+**A quick security tip:** Never share your API key or commit your `.env` file to GitHub. Treat it like a password, because anyone with access to it can use your OpenAI account and incur charges.
+
+Next, create another file named `requirements.txt`. This file keeps track of all the Python packages that our project depends on. It's especially useful when you want to share your project or set it up on another computer, because you can install all the required packages with a single command.
+
+Inside the requirements.txt file, add the following:
+```python
+openai
+python-dotenv
+```
+
+Later, anyone can install these dependencies by running:
+```python
+pip install -r requirements.txt
+```
+
+Using a `requirements.txt` file is a standard Python practice and helps make your projects easier to reproduce and maintain.
+
+Finally, create the three Python files we need to use in this project:
+```python
+main.py
+agent.py
+tools.py
+```
+
+`main.py` is the entry point of our application. `agent.py` contains the AI agent's logic, and `tools.py` contains the tools the agent can use. This simple structure keeps our project organized and easy to maintain.
+
