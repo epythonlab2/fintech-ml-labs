@@ -136,3 +136,65 @@ tools.py
 
 `main.py` is the entry point of our application. `agent.py` contains the AI agent's logic, and `tools.py` contains the tools the agent can use. This simple structure keeps our project organized and easy to maintain.
 
+### 5. Build Our First Tool
+
+Alright, we've finished setting up our project environment. Now it's time to start building our AI agent.
+
+First, open the `tools.py` file and import Python's built-in `datetime` module. We'll use it to create our first tool, which returns the current date and time.
+```python
+from datetime import datetime
+```
+Next, let's define the `get_current_time()` function.
+
+Notice how simple it is. A tool doesn't have to be anything complicated. In its simplest form, a tool is just a Python function that performs a specific task and returns the result. In this case, our tool returns the current date and time as a string.
+
+```python
+def get_current_time():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+```
+
+Now, let's create our second tool: a simple calculator.
+
+This function accepts a mathematical expression as text, evaluates it, and returns the result. If the expression isn't valid, it catches the error and returns a friendly error message instead.
+
+Before we continue, there's one important thing to know. In real-world applications, you should never use Python's `eval()` function with user input because it can execute malicious code. We're only using it here to keep the example simple and focus on understanding how AI agents work. Later, you can replace it with a safer expression parser for production use.
+
+```python
+def calculator(expression):
+    try:
+        return str(eval(expression))
+    except Exception:
+        return "Error: Invalid mathematical expression"
+```
+
+### 6. Build the Decision Logic
+
+Now let's move on to the core of our AI agent: the decision logic.
+
+Open the `agent.py` file. This is where we'll define how our agent receives a request, analyzes it, and decides which tool to use.
+
+We begin by importing the tool functions from our `tools.py` file.
+
+These are the capabilities our agent can use when it needs to perform specific tasks. In this case, we're giving our agent access to the time tool and the calculator tool.
+```python
+from tools import get_current_time, calculator
+```
+
+Next, we create our `SimpleAgent` class.
+
+Inside this class, we define the `think()` method, which is the main decision-making function of our agent.
+
+First, we normalize the user's input by converting it to lowercase. This makes the agent's routing logic more consistent, so it can recognize requests regardless of how the user types them.
+```python
+class SimpleAgent:
+    def think(self, prompt: str) -> str:
+        normalized_prompt = prompt.lower()
+```
+
+Now we build the first part of our decision logic.
+
+If the user's prompt contains the word `"time"`, the agent recognizes that it needs the time tool and calls the `get_current_time()` function.
+
+This is the basic idea behind tool selection in an AI agent: the agent receives a request, decides what capability it needs, and then executes the appropriate tool.
+
+
