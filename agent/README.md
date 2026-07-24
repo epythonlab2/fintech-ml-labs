@@ -4,11 +4,13 @@
 
 One of the biggest misconceptions in AI today is that you need massive frameworks like LangChain or CrewAI to build an AI agent.
 
-In reality, you can build using pure Python.
+In reality, you can build one using pure Python.
 
-In this video, I will show you how to build a fully functional AI agent from scratch using pure Python. We're not going to rely on **LangChain, CrewAI**, or any other heavy frameworks. Instead, we'll build it step by step so you can understand exactly what's happening at each stage. By the end, you'll have a working AI agent and a solid understanding of how modern AI agents make decisions and use tools.
+In this video, I'll show you how to build a fully functional AI agent from scratch using pure Python. We're not going to rely on LangChain, CrewAI, or any other heavy frameworks. We'll also use Ollama to run a local language model, so you don't need an API key or paid credits to follow along.
 
-Before we begin, please like this video, subscribe to the channel, and leave a comment below. Your support really helps a lot. Let's get started!
+We'll build everything step by step, so you can understand exactly what's happening at each stage. By the end of this tutorial, you'll have a working AI agent and a solid understanding of how modern AI agents make decisions and use tools.
+
+Before we begin, please like this video, subscribe to the channel, and leave a comment below. Your support really helps. Let's get started!
 
 ### 2. What is an AI Agent?
 ```bash
@@ -87,7 +89,7 @@ That's the entire core architecture. Everything else—memory, planning, multi-a
 
 Now, let's set up our project environment. First, create a new project and name it **agent**. Once you've created it, right-click on the project folder and select **Integrated Terminal** to open a terminal inside the project directory.
 
-Next, let's create a virtual environment. Run the following command:
+Next, let's create a virtual environment. Run the command:
 
 ```python
 python3 -m venv .venv
@@ -110,40 +112,27 @@ Once the virtual environment is activated, we're ready to install the packages f
 
 In the terminal, run:
 ```python
-pip install openai python-dotenv
+pip install ollama
 ```
 
-This installs two libraries. The **OpenAI** package allows our Python application to communicate with OpenAI models, and **python-dotenv** lets us securely load environment variables, such as our API key, from a **.env** file instead of hardcoding them into our code. This is a simple but important best practice for keeping sensitive information secure.
+This installs the Ollama Python library, which allows our application to communicate with a local large language model running on our machine.
 
 Now, let's create the files we'll need for our project.
 
-Inside the **agent** folder, create a new file named `.env`. This file is where we'll store our OpenAI API key securely.
-
-Open the `.env` file and add the following line:
-```python
-OPENAI_API_KEY=your_actual_api_key_here
-```
-
-Next, sign in to your OpenAI account, create or copy your API key from the API dashboard, and replace your_actual_api_key_here with your own key.
-
-**A quick security tip:** Never share your API key or commit your `.env` file to GitHub. Treat it like a password, because anyone with access to it can use your OpenAI account and incur charges.
-
-Next, create another file named `requirements.txt`. This file keeps track of all the Python packages that our project depends on. It's especially useful when you want to share your project or set it up on another computer, because you can install all the required packages with a single command.
+First, create a file named `requirements.txt`. This file keeps track of all the Python packages that our project depends on. It's especially useful when you want to share your project or set it up on another computer, because you can install all the required packages with a single command.
 
 Inside the requirements.txt file, add the following:
 ```python
-openai
-python-dotenv
+ollama
 ```
 
 Later, anyone can install these dependencies by running:
 ```python
 pip install -r requirements.txt
 ```
-
 Using a `requirements.txt` file is a standard Python practice and helps make your projects easier to reproduce and maintain.
 
-Finally, create the three Python files we need to use in this project:
+And then, create the three Python files we need to use in this project:
 ```python
 main.py
 agent.py
@@ -309,39 +298,36 @@ This is the basic foundation of an AI agent: understanding the request, deciding
 
 ### 8. Add an LLM Brain
 
-Now that we understand the basic agent loop, let's take the next step and add an LLM as the brain of our agent.
+Now that we've built the basic agent loop, let's make our agent smarter by adding a Large Language Model.
 
-Our current approach uses simple `if/else` conditions to decide which tool to call. This works for predictable commands, but real-world users don't always phrase requests in the same way.
+So far, our agent relies on simple if statements to decide what to do. That works for straightforward commands, but real users don't always ask questions the same way.
 
-For example, a user might ask `"Can you tell me the current time?"` or `"What time is it where I am?"` Both mean the same thing, but a rule-based system may not recognize them.
+For example, someone might say, "What time is it?", "Can you tell me the current time?", or "What's the time right now?" They all mean the same thing, but a rule-based system may not recognize every variation.
 
-This is where a Large Language Model helps. Instead of relying only on hardcoded rules, the LLM can understand the user's intent, reason about the request, and decide what action the agent should take.
+This is where an LLM becomes useful. Instead of relying only on hardcoded rules, it can understand the user's intent and generate a natural response.
 
-Now let's integrate an LLM into our agent.
+Now let's integrate **Ollama** into our agent.
 
-First, we import the OpenAI client and create an instance that allows our application to communicate with the model.
-
-Then, we define the think_with_llm() function. This function takes the user's prompt, sends it to the LLM, and returns the model's response.
-
-Instead of manually writing many if/else conditions, the model can now understand different ways users express their requests and generate a response based on the context.
-
-This is the key transition from a rule-based system to a more flexible AI agent architecture. The LLM becomes the reasoning layer that helps the agent interpret requests and decide what to do next.
+First, import the ollama library. Then, inside the think() method, remove the final else block. If none of our tools match the user's request, we'll send the prompt to the local language model instead.
 ```python
-from openai import OpenAI
+import ollama
 
-client = OpenAI()
+# Fall back to the LLM
+        response = ollama.chat(
+            model="llama3.2",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
 
-def think_with_llm(prompt: str) -> str:
-    response = client.responses.create(
-        model="gpt-5",
-        input=prompt
-    )
-    return response.output_text
+        return response["message"]["content"]
 ```
 
-With this approach, our agent is no longer limited to exact keywords. It can handle more natural conversations and understand the intent behind user requests.
+Now our agent follows a simple workflow. It first checks whether a request can be handled by one of its tools. If not, it forwards the request to the LLM for reasoning and response generation.
 
-Now let's test our LLM-powered agent.
+This approach gives us the best of both worlds: deterministic tools for specific tasks and a language model for flexible, natural conversations.
+
+Let's run the application and see our AI agent in action.
 
 Run the application again and try different types of questions. This time, instead of matching specific keywords, the model will interpret the meaning of the request and generate a response based on the context.
 
