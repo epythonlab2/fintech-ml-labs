@@ -117,6 +117,7 @@ pip install ollama
 
 This installs the Ollama Python library, which allows our application to communicate with a local large language model running on our machine.
 
+
 Now, let's create the files we'll need for our project.
 
 First, create a file named `requirements.txt`. This file keeps track of all the Python packages that our project depends on. It's especially useful when you want to share your project or set it up on another computer, because you can install all the required packages with a single command.
@@ -329,7 +330,23 @@ This approach gives us the best of both worlds: deterministic tools for specific
 
 Let's run the application and see our AI agent in action.
 
-Run the application again and try different types of questions. This time, instead of matching specific keywords, the model will interpret the meaning of the request and generate a response based on the context.
+Before running our AI agent, we need to make sure Ollama is ready.
+
+First, start the Ollama server by running:
+```python
+ollama serve
+```
+
+This starts the local server that allows our Python application to communicate with the language model.
+
+Next, download the model we'll use in this project. You only need to do this once:
+```python
+ollama pull llama3.2
+```
+
+This downloads the Llama 3.2 model and stores it locally on your machine.
+
+Finally, run the agent application and try different types of questions. This time, instead of matching specific keywords, the model will interpret the meaning of the request and generate a response based on the context.
 
 For example:
 ```python
