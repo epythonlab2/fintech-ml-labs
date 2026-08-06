@@ -1,0 +1,75 @@
+{
+    "ORD-10001": {
+        "customer": "Alice Johnson",
+        "item": "Sony WH-1000XM5 Headphones",
+        "status": "Delivered",
+        "price": 349.99,
+        "days_old": 12,
+        "tracking_number": "TRK938475612",
+        "carrier": "FedEx"
+    },
+    "ORD-10002": {
+        "customer": "Michael Brown",
+        "item": "Apple Magic Keyboard",
+        "status": "Shipped",
+        "price": 129.00,
+        "days_old": 4,
+        "tracking_number": "TRK384756291",
+        "carrier": "UPS"
+    },
+    "ORD-10003": {
+        "customer": "Sophia Williams",
+        "item": "Samsung 27-inch Monitor",
+        "status": "Processing",
+        "price": 279.99,
+        "days_old": 2,
+        "tracking_number": null,
+        "carrier": null
+    },
+    "ORD-10004": {
+        "customer": "David Miller",
+        "item": "Logitech MX Master 3S Mouse",
+        "status": "Out for Delivery",
+        "price": 99.99,
+        "days_old": 6,
+        "tracking_number": "TRK567483920",
+        "carrier": "DHL"
+    },
+    "ORD-10005": {
+        "customer": "Emma Davis",
+        "item": "Dell XPS 13 Laptop",
+        "status": "Delayed",
+        "price": 1299.99,
+        "days_old": 9,
+        "tracking_number": "TRK827364510",
+        "carrier": "FedEx"
+    },
+    "ORD-10006": {
+        "customer": "James Wilson",
+        "item": "Anker USB-C Hub",
+        "status": "Cancelled",
+        "price": 59.99,
+        "days_old": 1,
+        "tracking_number": null,
+        "carrier": null
+    },
+    "ORD-10007": {
+        "customer": "Olivia Martinez",
+        "item": "Kindle Paperwhite",
+        "status": "Returned",
+        "price": 149.99,
+        "days_old": 28,
+        "tracking_number": "TRK918273645",
+        "carrier": "USPS"
+    },
+
+       "ORD-10008": {
+        "customer": "Olivia Martinez",
+        "item": "Kindle Paperwhite",
+        "status": "Delivered",
+        "price": 149.99,
+        "days_old": 38,
+        "tracking_number": "TRK918273645",
+        "carrier": "USPS"
+    }
+}

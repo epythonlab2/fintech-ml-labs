@@ -6,17 +6,23 @@ Building a simple chatbot is easy task today.
 
 But building an AI agent that can check inventory, calculate refunds, track customer orders, and even search the web when it needs up-to-date information is a completely different challenge.
 
-In this video, we are going to build **ShopMind AI**, a complete autonomous e commerce support system from scratch using **Google Gemini 2.5 Flash, LangChain, and LangGraph**.
+In this video, we are going to build **ShopMind AI**, a complete autonomous e commerce support system from scratch using **Google Gemini 3.6 Flash, LangChain, and LangGraph**.
 
 Together, we will build an AI agent that can reason through customer requests, choose the right tools, retrieve live information, and provide accurate responses with minimal human intervention.
 
 Along the way, you will learn how to:
 
+
 ✔️ Turn Python functions into LangChain tools
+
 ✔️ Build an autonomous agent with LangGraph
-✔️ Connect the agent to the Gemini 2.5 Flash model
+
+✔️ Connect the agent to the Gemini 3.6 Flash model
+
 ✔️ Create a complete ReAct agent workflow
+
 ✔️ Add guardrails for real world customer support scenarios
+
 
 By the end of this tutorial, you will have a fully functional AI agent and a solid understanding of how modern agent frameworks combine reasoning, tool calling, and execution to solve real business problems.
 
@@ -34,7 +40,7 @@ Now, let's start building.
                               ▼
                   ┌────────────────────────┐
                   │  ShopMind AI Engine    │
-                  │ (Gemini 2.5 Flash LLM) │
+                  │ (Gemini 3.6 Flash LLM) │
                   └───────────┬────────────┘
                               │
            /──────────── Select Tool ────────────\
@@ -61,7 +67,7 @@ Before we start coding, let's take a look at how **ShopMind AI** works behind th
 
 Every customer request follows a simple but powerful workflow.
 
-When a customer sends a message, it is first passed to **Gemini 2.5 Flash**, which acts as the reasoning engine for our AI agent.
+When a customer sends a message, it is first passed to **Gemini 3.6 Flash**, which acts as the reasoning engine for our AI agent.
 
 The model analyzes the customer's intent and decides which tool or combination of tools it needs to complete the task.
 
@@ -113,11 +119,11 @@ Once the virtual environment is activated, we are ready to install the packages 
 Open the terminal and run:
 
 ```bash
-pip install langchain-google-genai langgraph python-dotenv
+pip install langchain langchain-google-genai langgraph python-dotenv
 ```
 
 This command installs three Python packages.
-
+* **langchain** provides the framework for connecting our application with large language models and building AI-powered workflows.
 * **langchain-google-genai** lets our application communicate with the **Google Gemini** models.
 * **langgraph** provides the framework for building the agent workflow and execution loop.
 * **python-dotenv** allows us to securely load environment variables, such as our Gemini API key, from a `.env` file instead of hardcoding them into our application.
@@ -133,6 +139,7 @@ First, create a file named **`requirements.txt`**. This file lists all the Pytho
 Inside **`requirements.txt`**, list the required libraries:
 
 ```text
+langchain
 langchain-google-genai
 langgraph
 python-dotenv
@@ -151,7 +158,7 @@ Next, create a file named **`.env`**. This file stores your environment variable
 Inside the **`.env`** file, add the following:
 
 ```text
-GOOGLE_API_KEY=your_google_api_key
+GEMINI_API_KEY=your_google_api_key
 ```
 
 Next, sign in to **Google AI Studio**, generate an API key, and replace `your_google_api_key` with your own key.
@@ -315,15 +322,17 @@ Now, we move to **`main.py`** where we connect everything together and create ou
 
 First, we import the required libraries.
 
-We import **`load_dotenv`** to load our environment variables, **`ChatGoogleGenerativeAI`** to connect with Gemini, and **`create_react_agent`** to create our ReAct agent.
+We import **`load_dotenv`** to load our environment variables, **`ChatGoogleGenerativeAI`** to connect with Gemini, and **`create_agent`** to create our ReAct agent.
 
-We also import the tools we created earlier: **`get_order_status`** and **`process_return`**.
+We also import HumanMessage, which helps us format user messages before sending them to the agent.
+
+Finally, we import the tools we created earlier: **`get_order_status`** and **`process_return`**.
 
 ```python
-import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langgraph.prebuilt import create_react_agent
+from langchain_core.messages import HumanMessage
+from langchain.agents import create_agent
 from tools import get_order_status, process_return
 ```
 
@@ -345,18 +354,22 @@ tools = [get_order_status, process_return]
 
 This list tells our agent which tools it can use when responding to user requests.
 
-Then, we initialize **Gemini 2.5 Flash** using LangChain’s **`ChatGoogleGenerativeAI`**.
+Then, we initialize **Gemini 3.6 Flash** using LangChain’s **`ChatGoogleGenerativeAI`**.
 
 ```python id="h4v8k2"
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    temperature=0.1
+    model="gemini-3.6-flash",
+    temperature=None
 )
 ```
 
 The **temperature** value controls how creative or random the model responses are.
 
-By setting it to **0.1**, we make the agent more consistent and reliable when deciding which tools to call.
+The temperature value controls how creative or random the model responses are.
+
+The temperature value controls how creative or random the model responses are.
+
+By setting it to **None**, we allow Gemini to use its default behavior. For an agent that needs to select tools and follow instructions reliably, keeping the model behavior consistent is important
 
 Next, we define the **system prompt** for our AI agent.
 
@@ -370,19 +383,40 @@ This prompt defines the role and behavior of our agent.
 
 It tells Gemini that it is **ShopMind AI**, a customer support assistant, and instructs it to use tools whenever it needs order information.
 
-Finally, we create our agent executor using **`create_react_agent`**.
+Finally, we create our agent executor using **`create_agent`**.
 
 ```python id="9d2x7m"
-agent_executor = create_react_agent(
+agent_executor = create_agent(
     model=llm,
     tools=tools,
-    state_modifier=system_prompt
+    system_prompt=system_prompt
 )
 ```
 
-Here, we connect Gemini with our tools and system instructions.
+Here, we connect Gemini with our custom tools and system instructions.
 
-LangGraph automatically builds the ReAct workflow that allows the agent to reason, choose the right tool, and generate the final response.
+The agent can now understand user requests, decide when a tool is needed, execute the tool, and generate a final response.
+
+Next, we create a helper function called get_clean_text().
+```python
+def get_clean_text(content):
+    """Extract plain text whether content is a string or a list of blocks."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join(
+            block["text"] for block in content 
+            if isinstance(block, dict) and "text" in block
+        )
+    return str(content)
+```
+
+This function handles different response formats from the AI model.
+
+Sometimes the response content is returned as a simple string, and sometimes it may come as a list of content blocks.
+
+This helper converts those formats into clean text that we can display to the user.
+
 
 ### 6. Live Agent Terminal Demonstration
 
@@ -406,20 +440,35 @@ if user_input.lower() == "exit":
 Next, we send the user message to our agent executor.
 
 ```python id="j4m8qw"
-response = agent_executor.invoke({"messages": [("user", user_input)]})
+response = agent_executor.invoke({"messages": [HumanMessage(content=user_input)]})
 ```
 
-LangGraph processes the request, allows Gemini to decide whether it needs a tool, executes the tool if required, and returns the final response.
+Here, we pass the user's input to the agent using HumanMessage.
+
+The agent receives the request, reasons about the task, decides whether it needs to use one of our tools, and then generates the final response.
+
+This is where the complete agent workflow happens.
+
 
 Finally, we display the AI response in the terminal.
 
-```python id="b7w3kp"
-for msg in response["messages"]:
-    if msg.type == "ai" and msg.content:
-        print(f"\n[ShopMind AI]: {msg.content}\n")
+```python
+# Extract and print only the final AI text response
+last_msg = response["messages"][-1]
+
+if last_msg.type == "ai" and last_msg.content:
+    clean_text = get_clean_text(last_msg.content)
+    print(f"\n[ShopMind AI]: {clean_text}\n")
 ```
 
-Now we have a fully working AI customer support agent that can understand requests, use tools, apply business logic, and respond to customers.
+Here, we get the last message from the agent response, which contains the final AI answer.
+
+Before displaying it, we use our **`get_clean_text()`** helper function to make sure the response is converted into clean, readable text.
+
+Finally, we print the message with the **ShopMind AI** label.
+
+Now we have a fully working AI customer support agent that can understand user requests, use tools, apply business rules, and respond intelligently to customers.
+
 
 
 Now, let's run our agent and see it in action.
@@ -433,7 +482,7 @@ python main.py
 First, we ask about an order status:
 
 ```text
-Customer: Can you check where my order ORD-9912 is?
+Customer: Can you check where my order ORD-10002 is?
 ```
 
 ShopMind AI understands that this request requires order information, so it automatically uses the **`get_order_status`** tool.
@@ -441,13 +490,13 @@ ShopMind AI understands that this request requires order information, so it auto
 The agent returns:
 
 ```text
-[ShopMind AI]: Your order ORD-9912 for Wireless Headphones is currently Shipped.
+[ShopMind AI]: Your order ORD-10002 for Wireless Headphones is currently Shipped.
 ```
 
 Next, we test a return request:
 
 ```text
-Customer: I want to return ORD-4401. Can I get a refund?
+Customer: I want to return ORD-10008. Can I get a refund?
 ```
 
 This time, the agent recognizes that it needs to check the return policy, so it uses the **`process_return`** tool.
@@ -455,7 +504,7 @@ This time, the agent recognizes that it needs to check the return policy, so it 
 The response:
 
 ```text
-[ShopMind AI]: I checked order ORD-4401. Unfortunately, this order was placed 40 days ago, which exceeds our 30-day return policy limit.
+[ShopMind AI]: I checked order ORD-10008. Unfortunately, this order was placed 40 days ago, which exceeds our 30-day return policy limit.
 ```
 
 Notice how the agent automatically selects the right tool based on the user's request.
@@ -467,7 +516,7 @@ This is the power of AI agents. They do not just generate text. They can reason 
 
 ### 7. Summary & Conclusion
 
-`And that is how we built **ShopMind AI**, a complete e-commerce support agent powered by **Gemini 2.5 Flash, LangChain, and LangGraph**.
+`And that is how we built **ShopMind AI**, a complete e-commerce support agent powered by **Gemini 3.6 Flash, LangChain, and LangGraph**.
 
 In this project, we connected Gemini with real tools, added clear tool descriptions, and created a ReAct workflow that allows the agent to understand requests, choose the right tool, and complete tasks automatically.
 
